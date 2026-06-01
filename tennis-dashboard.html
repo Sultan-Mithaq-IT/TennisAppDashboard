@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tennis App & QR Gate — Project Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0A2540; --navy-2:#102d54; --navy-3:#163966;
+  --gold:#C9A961; --gold-2:#E0C078; --gold-3:#A88838;
+  --bg:#F5F6F8; --card:#ffffff; --ink:#0A2540; --ink-2:#3a4a64;
+  --muted:#6b7a90; --line:#e5e9f0;
+  --green:#22A06B; --amber:#F2A93B; --red:#E04848; --grey:#9aa4b2;
+  --blue-soft:#E8EEF7;
+  --shadow:0 2px 8px rgba(10,37,64,.06), 0 12px 40px rgba(10,37,64,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Cairo','Inter',system-ui,-apple-system,sans-serif;
+  font-size:14px;line-height:1.5;}
+.en{font-family:'Inter',sans-serif}
+.wrap{max-width:1380px;margin:0 auto;padding:18px 22px 60px}
+.topbar{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-3) 100%);
+  color:#fff;border-radius:14px;padding:22px 26px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.topbar::before{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,169,97,.18) 0%,rgba(201,169,97,0) 70%)}
+.topbar-grid{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:14px}
+.logo-mark{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-3) 100%);
+  display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--navy);font-size:26px;
+  box-shadow:0 4px 14px rgba(201,169,97,.35)}
+.brand h1{margin:0;font-size:20px;font-weight:800;letter-spacing:.2px}
+.brand h1 small{display:block;font-weight:500;color:var(--gold-2);font-size:13px;margin-top:3px;font-family:'Inter',sans-serif}
+.proj-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px}
+.proj-meta .item{font-size:12.5px;color:#cfd8e6}
+.proj-meta .item b{color:#fff;font-weight:600}
+.tag-row{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.tag{background:rgba(255,255,255,.08);border:1px solid rgba(201,169,97,.45);
+  color:var(--gold-2);font-size:12px;padding:5px 11px;border-radius:999px;font-weight:600}
+.tag.live{background:rgba(34,160,107,.18);color:#7CE0AE;border-color:rgba(34,160,107,.5)}
+.tag.gold{background:var(--gold);color:var(--navy);border-color:var(--gold-3)}
+.updated{color:#cfd8e6;font-size:12px;margin-top:8px;text-align:right}
+.tabs{margin-top:14px;background:#fff;border-radius:12px;display:flex;gap:0;overflow:hidden;
+  box-shadow:var(--shadow);padding:6px}
+.tabs button{flex:1;background:transparent;border:none;color:var(--ink-2);font-family:inherit;font-weight:700;
+  font-size:14px;padding:13px 14px;border-radius:8px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.tabs button .en-sub{font-family:'Inter',sans-serif;font-weight:500;font-size:11.5px;color:var(--muted);margin-inline-start:6px}
+.tabs button:hover{background:#f4f6fa;color:var(--navy)}
+.tabs button.active{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-3) 100%);color:#fff}
+.tabs button.active .en-sub{color:var(--gold-2)}
+.page{display:none;margin-top:18px}
+.page.active{display:block}
+.section-title{display:flex;align-items:center;gap:10px;margin:18px 0 10px;font-size:15px;font-weight:800;color:var(--navy)}
+.section-title::before{content:"";width:4px;height:18px;background:var(--gold);border-radius:3px}
+.section-title .en{font-weight:500;color:var(--muted);font-size:12px;margin-inline-start:6px}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);border-top:3px solid var(--gold)}
+.kpi.green{border-top-color:var(--green)} .kpi.amber{border-top-color:var(--amber)}
+.kpi.red{border-top-color:var(--red)}     .kpi.navy{border-top-color:var(--navy)}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.kpi .value{font-size:24px;font-weight:800;color:var(--navy);line-height:1.1}
+.kpi .value small{font-size:13px;color:var(--muted);font-weight:600;margin-inline-start:4px}
+.kpi .sub{font-size:11.5px;color:var(--ink-2);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid-1-2{display:grid;grid-template-columns:360px 1fr;gap:14px}
+.grid-2-1{display:grid;grid-template-columns:1fr 360px;gap:14px}
+.card{background:var(--card);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 12px;font-size:14.5px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px}
+.card h3 .en{font-weight:500;color:var(--muted);font-size:11.5px}
+.card h3 .pill{margin-inline-start:auto;font-size:11px;padding:3px 10px;border-radius:999px;background:var(--blue-soft);color:var(--navy);font-weight:700}
+.bar-wrap{background:#eef1f6;height:10px;border-radius:6px;overflow:hidden;margin-top:6px}
+.bar{height:100%;border-radius:6px;transition:width .8s}
+.bar.green{background:linear-gradient(90deg,var(--green),#2dc985)}
+.bar.amber{background:linear-gradient(90deg,var(--amber),#ffc66e)}
+.bar.red{background:linear-gradient(90deg,var(--red),#ff7575)}
+.bar.grey{background:linear-gradient(90deg,#c1c8d4,#dde2eb)}
+.bar.gold{background:linear-gradient(90deg,var(--gold-3),var(--gold))}
+.bar-row{margin-bottom:10px}
+.bar-row .top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
+.bar-row .top b{color:var(--navy);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+table thead th{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;font-weight:700;padding:9px 10px;text-align:left;font-size:12px}
+table thead th:first-child{border-radius:8px 0 0 0} table thead th:last-child{border-radius:0 8px 0 0}
+table tbody td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--ink-2)}
+table tbody tr:hover{background:#fafbfd} table tbody tr:last-child td{border-bottom:none}
+.tbl-wrap{overflow:auto;border-radius:8px;border:1px solid var(--line)}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.badge.green{background:#E4F7EE;color:#16744D} .badge.amber{background:#FDF1DE;color:#A06A1A}
+.badge.red{background:#FCE4E4;color:#9B2424}   .badge.grey{background:#EEF1F6;color:#506379}
+.badge.navy{background:var(--navy);color:#fff}  .badge.gold{background:var(--gold);color:var(--navy)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+.dot.green{background:var(--green)} .dot.amber{background:var(--amber)}
+.dot.red{background:var(--red)}     .dot.grey{background:var(--grey)}
+.pay-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px}
+.pay-card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);border-inline-start:5px solid var(--grey);position:relative}
+.pay-card.paid{border-inline-start-color:var(--green)} .pay-card.due{border-inline-start-color:var(--amber)}
+.pay-card .pnum{position:absolute;top:10px;right:14px;color:var(--gold-3);font-weight:900;font-size:13px;font-family:'Inter'}
+.pay-card .ttl{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:4px;padding-right:28px}
+.pay-card .trigger{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5;min-height:28px}
+.pay-card .amt{font-size:20px;font-weight:900;color:var(--navy);margin:6px 0}
+.pay-card .amt small{font-size:12px;color:var(--muted);font-weight:600}
+.phase-card{background:var(--card);border-radius:12px;padding:16px;box-shadow:var(--shadow);border-inline-start:5px solid var(--grey);margin-bottom:10px}
+.phase-card.done{border-inline-start-color:var(--green)}
+.phase-card.active{border-inline-start-color:var(--amber);background:#fffdf8}
+.phase-card.hold{border-inline-start-color:var(--amber)}
+.phase-card .ph-top{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:10px}
+.phase-card .ph-name{font-size:14px;font-weight:800;color:var(--navy)}
+.phase-card .ph-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+.phase-card .ph-note{font-size:11.5px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.hw-item{background:#fafbfd;border-radius:10px;padding:14px;border:1px solid var(--line);margin-bottom:10px}
+.hw-item:last-child{margin-bottom:0}
+.hw-item .hw-t{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.hw-item .hw-d{font-size:12px;color:var(--muted);line-height:1.5}
+.act-item{padding:10px 12px;border-radius:8px;background:#fafbfd;margin-bottom:8px;border-inline-start:3px solid var(--green)}
+.act-item.plan{border-inline-start-color:var(--gold)}
+.act-item .desc{font-weight:600;color:var(--ink);font-size:12.5px}
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:grid;grid-template-columns:12px 1fr;gap:14px;padding-bottom:16px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--grey);border:2px solid var(--line);margin-top:3px}
+.tl-item.done .tl-dot{background:var(--green);border-color:var(--green)}
+.tl-item.active .tl-dot{background:var(--amber);border-color:var(--amber)}
+.tl-item::before{content:'';position:absolute;left:5px;top:14px;bottom:0;width:1px;background:var(--line)}
+.tl-item:last-child::before{display:none}
+.tl-title{font-size:12.5px;font-weight:700;color:var(--ink)}
+.tl-item.done .tl-title{color:var(--green)} .tl-item.active .tl-title{color:var(--amber)}
+.tl-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.gauge-wrap{position:relative;height:200px;display:flex;align-items:center;justify-content:center}
+.gauge-value{position:absolute;text-align:center;top:55%;left:0;right:0}
+.gauge-value .big{font-size:36px;font-weight:900;color:var(--navy)}
+.gauge-value .lbl{font-size:11px;color:var(--muted);font-weight:600}
+.edit-tip{background:#fffbf0;border:1px dashed var(--gold);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--ink-2);line-height:1.7;margin-bottom:16px}
+.edit-tip b{color:var(--navy)} .edit-tip code{background:#f0ead8;padding:1px 6px;border-radius:4px;color:var(--navy);font-family:'Inter',monospace}
+.footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12px;padding:14px}
+.footer b{color:var(--navy)}
+@media(max-width:1100px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr)} .pay-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-1-2,.grid-2-1{grid-template-columns:1fr} .grid-2,.grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="edit-tip">
+  ✏️ <b>How to update this dashboard:</b> Open this file on GitHub → pencil icon → find <code>PROJECT_DATA</code> in the &lt;script&gt; → edit any value → Commit changes. No Google Sheets or Apps Script needed.
+</div>
+
+<!-- HEADER -->
+<div class="topbar">
+  <div class="topbar-grid">
+    <div>
+      <div class="brand">
+        <div class="logo-mark">🎾</div>
+        <h1>Tennis App & QR Gate — Project Dashboard
+          <small>App Development & Smart Gate System • <span id="projRef">PRJ-2026-001</span></small>
+        </h1>
+      </div>
+      <div class="proj-meta" id="projMeta"></div>
+    </div>
+    <div>
+      <div class="tag-row">
+        <span class="tag live">● In Progress</span>
+        <span class="tag gold" id="tagPhase">Android Dev</span>
+        <span class="tag" id="tagVersion">v1.0</span>
+      </div>
+      <div class="updated">Last updated: <b style="color:#fff" id="lastUpdated">—</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="tabs" id="tabs">
+  <button data-tab="exec" class="active">📊 Executive Overview <span class="en-sub">نظرة تنفيذية</span></button>
+  <button data-tab="phases">📱 App Phases <span class="en-sub">مراحل التطبيق</span></button>
+  <button data-tab="hardware">🔐 QR Gate & Hardware <span class="en-sub">البوابة والأجهزة</span></button>
+  <button data-tab="finance">💳 Payments <span class="en-sub">الدفعات</span></button>
+</nav>
+
+<!-- PAGE: EXECUTIVE -->
+<section class="page active" id="page-exec">
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="grid-3" style="margin-top:14px">
+    <div class="card">
+      <h3>Overall Progress <span class="en">التقدم الكلي</span></h3>
+      <div class="gauge-wrap">
+        <canvas id="gaugeOverall" width="280" height="200"></canvas>
+        <div class="gauge-value"><div class="big" id="gaugeBig">—</div><div class="lbl">Overall Completion</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Phase Status <span class="en">حالة المراحل</span></h3>
+      <div style="height:200px"><canvas id="phaseDonut"></canvas></div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,#fffbf0 0%,#fff 100%);border:1px solid #f4e6c2">
+      <h3>Current Phase <span class="en">المرحلة الحالية</span>
+        <span class="pill" style="background:var(--gold);color:var(--navy)" id="cpBadge">—</span></h3>
+      <div id="currentPhaseCard"></div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card">
+      <h3>Phases Progress <span class="en">تقدم المراحل</span></h3>
+      <div id="execBars"></div>
+    </div>
+    <div class="card">
+      <h3>Payment Overview <span class="en">نظرة على الدفعات</span></h3>
+      <div id="execPaySummary"></div>
+      <div style="height:160px;margin-top:10px"><canvas id="payDonut"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-top:14px" id="contractRow"></div>
+</section>
+
+<!-- PAGE: PHASES -->
+<section class="page" id="page-phases">
+  <div class="section-title">App Development Phases <span class="en">مراحل تطوير التطبيق</span></div>
+  <div id="phaseCards"></div>
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card">
+      <h3>Progress vs Plan <span class="en">الإنجاز مقابل الخطة</span></h3>
+      <div style="height:240px"><canvas id="phaseBarChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Project Timeline <span class="en">الجدول الزمني</span></h3>
+      <div class="timeline" id="timelineList"></div>
+    </div>
+  </div>
+  <div class="section-title" style="margin-top:18px">Notes & Next Actions <span class="en">الملاحظات والخطوات</span></div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>📋 Current Status Notes</h3>
+      <div id="statusNotes"></div>
+    </div>
+    <div class="card">
+      <h3>⚡ Next Actions</h3>
+      <div id="nextActions"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE: HARDWARE -->
+<section class="page" id="page-hardware">
+  <div class="section-title">QR Gate & Magnetic Lock <span class="en">بوابة QR والقفل المغناطيسي</span></div>
+  <div class="grid-2-1">
+    <div class="card" style="border-inline-start:5px solid var(--amber)">
+      <h3>🔐 Hardware Components <span class="en">مكونات الأجهزة</span>
+        <span class="pill" id="hwPill">Sourcing Vendors</span></h3>
+      <div id="hwItems"></div>
+    </div>
+    <div class="card">
+      <h3>📊 Status Summary <span class="en">ملخص الحالة</span></h3>
+      <div id="hwSummary"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;background:linear-gradient(135deg,#fffbf0,#fff);border:1px solid #f4e6c2">
+    <h3>⚙️ Integration Roadmap <span class="en">خارطة التكامل</span></h3>
+    <div style="font-size:13px;line-height:1.9;color:var(--ink-2)" id="integrationPlan"></div>
+  </div>
+</section>
+
+<!-- PAGE: PAYMENTS -->
+<section class="page" id="page-finance">
+  <div class="grid-2-1">
+    <div class="card">
+      <h3>💳 Payment Schedule <span class="en">جدول الدفعات</span>
+        <span class="pill" id="paidPill">— paid</span></h3>
+      <div class="pay-grid" id="payGrid"></div>
+    </div>
+    <div class="card">
+      <h3>Payment Split <span class="en">توزيع الدفعات</span></h3>
+      <div style="height:200px"><canvas id="payChart"></canvas></div>
+      <div id="paySummaryFin" style="margin-top:14px"></div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  <b>Tennis App & QR Gate — Project Dashboard</b> •
+  Data embedded in file • Edit <code style="background:#f0f0f5;padding:1px 5px;border-radius:4px">PROJECT_DATA</code> to update
+</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   EDIT ONLY THIS OBJECT TO UPDATE THE DASHBOARD
+══════════════════════════════════════════════════════════ */
+const PROJECT_DATA = {
+  ref:         "PRJ-2026-001",
+  client:      "TBD",
+  vendor:      "TBD",
+  pm:          "TBD",
+  version:     "v1.0",
+  lastUpdated: "2026-05-20",
+  overallPct:  40,
+
+  phases: [
+    { id:1, name:"Project Kickoff & Initial Payment", nameAr:"انطلاق المشروع",
+      desc:"4,000 SAR first payment to initiate the project and begin development",
+      amount:4000, trigger:"Upfront — before any work", status:"done", pct:100,
+      note:"✅ Payment received — project started" },
+    { id:2, name:"GUI Design", nameAr:"تصميم واجهة المستخدم",
+      desc:"Full UI/UX design of the tennis app — screens, user flows, and brand identity",
+      amount:2500, trigger:"After GUI design completion", status:"done", pct:100,
+      note:"✅ Design completed and approved" },
+    { id:3, name:"Android App Development", nameAr:"تطوير تطبيق Android",
+      desc:"Development of the Android version including QR code reader and court booking system",
+      amount:1000, trigger:"After Android app delivery", status:"active", pct:75,
+      note:"⏳ Awaiting domain reservation before publishing to Play Store" },
+    { id:4, name:"iOS App Development", nameAr:"تطوير تطبيق iOS",
+      desc:"Development of the Apple App Store version of the tennis app",
+      amount:1000, trigger:"After iOS app delivery", status:"pending", pct:0,
+      note:"🔜 Starts after Android is published" },
+    { id:5, name:"Payment Gateway & SMS Notifications", nameAr:"بوابة الدفع وإشعارات SMS",
+      desc:"Integration of payment processing and automated SMS notifications for court bookings",
+      amount:0, trigger:"Included in project scope", status:"active", pct:20,
+      note:"🔄 Underway in parallel — no separate payment milestone" }
+  ],
+
+  payments: [
+    { id:1, name:"Initial Payment",       trigger:"Project Kickoff — upfront",     amount:4000, status:"paid"    },
+    { id:2, name:"GUI Design Milestone",  trigger:"After GUI design completion",    amount:2500, status:"paid"    },
+    { id:3, name:"Android App Milestone", trigger:"After Android app delivery",     amount:1000, status:"due"     },
+    { id:4, name:"iOS App Milestone",     trigger:"After iOS app delivery",         amount:1000, status:"upcoming"}
+  ],
+
+  hardware: {
+    badge: "🔍 Sourcing Vendors",
+    items: [
+      { title:"Magnetic Lock",              desc:"Electric strike / magnetic lock for court gate — vendor not yet selected",          status:"hold",    label:"🔍 Sourcing" },
+      { title:"QR Code Scanner",            desc:"Hardware QR reader for in-app court booking codes at gate entry",                   status:"hold",    label:"🔍 Sourcing" },
+      { title:"App ↔ Gate Integration",     desc:"Backend API linking app-generated QR codes to gate unlock trigger",                 status:"pending", label:"⏳ Pending hardware" },
+      { title:"Installation & Testing",     desc:"On-site physical wiring, installation, and end-to-end QR unlock testing",          status:"pending", label:"⏳ Pending hardware" }
+    ],
+    integrationSteps: [
+      { n:1, title:"Vendor Selection",     desc:"Shortlist and select suppliers for magnetic lock + QR scanner hardware" },
+      { n:2, title:"Hardware Procurement", desc:"Purchase and receive hardware components" },
+      { n:3, title:"Backend Integration",  desc:"Link app-generated QR codes to gate unlock API" },
+      { n:4, title:"On-site Installation", desc:"Physical installation and wiring at the court gate" },
+      { n:5, title:"End-to-End Testing",   desc:"Full QR scan → unlock testing cycle sign-off" }
+    ]
+  },
+
+  notes: [
+    { text:"Android app is <b>75% complete</b> — domain reservation is the only remaining blocker before Play Store publish", type:"active" },
+    { text:"Payment gateway & SMS notifications are <b>running in parallel</b> as a background workstream", type:"active" },
+    { text:"GUI Design phase is <b>100% complete</b> and signed off", type:"done" },
+    { text:"Hardware vendors for magnetic lock + QR scanner are <b>still being sourced</b>", type:"hold" }
+  ],
+
+  nextActions: [
+    "Reserve domain and configure app backend hosting",
+    "Publish Android app to Google Play Store",
+    "Begin iOS development after Android is published",
+    "Shortlist 2–3 vendors for magnetic lock + QR scanner",
+    "Complete payment gateway integration and testing"
+  ]
+};
+/* ══════════════════════════════════════════════════════════
+   END OF DATA
+══════════════════════════════════════════════════════════ */
+
+const $ = id => document.getElementById(id);
+const fmtNum = n => Number(n||0).toLocaleString('en-US');
+let CHARTS = {};
+
+function sc(s){ return {done:'green',active:'amber',pending:'grey',hold:'amber'}[s]||'grey'; }
+function sl(s){ return {done:'✓ Completed',active:'⏳ In Progress',pending:'— Not Started',hold:'🔍 On Hold'}[s]||s; }
+function destroyChart(id){ if(CHARTS[id]){ CHARTS[id].destroy(); delete CHARTS[id]; } }
+
+Chart.defaults.font.family = "'Cairo','Inter',sans-serif";
+Chart.defaults.color = '#3a4a64';
+
+function render(){
+  const D = PROJECT_DATA;
+  const totalContract = D.payments.reduce((s,p)=>s+p.amount,0);
+  const totalPaid     = D.payments.filter(p=>p.status==='paid').reduce((s,p)=>s+p.amount,0);
+  const remaining     = totalContract - totalPaid;
+  const payPct        = totalContract>0 ? (totalPaid/totalContract*100) : 0;
+  const doneCount     = D.phases.filter(p=>p.status==='done').length;
+  const activeCount   = D.phases.filter(p=>p.status==='active').length;
+  const activePhase   = D.phases.find(p=>p.status==='active') || D.phases[D.phases.length-1];
+
+  // Header
+  $('projRef').textContent    = D.ref;
+  $('tagVersion').textContent = D.version;
+  $('lastUpdated').textContent = D.lastUpdated;
+  $('tagPhase').textContent   = activePhase.name.split(' ').slice(0,2).join(' ');
+  $('projMeta').innerHTML = [
+    D.client!=='TBD' ? `<div class="item">Client / <b>${D.client}</b></div>` : '',
+    D.vendor!=='TBD' ? `<div class="item">Vendor / <b>${D.vendor}</b></div>` : '',
+    D.pm!=='TBD'     ? `<div class="item">PM / <b>${D.pm}</b></div>` : '',
+    `<div class="item">Contract / <b>${fmtNum(totalContract)} SAR</b></div>`
+  ].join('');
+
+  // KPIs
+  $('kpiGrid').innerHTML = `
+    <div class="kpi amber">
+      <div class="label">Overall Progress</div>
+      <div class="value">${D.overallPct}<small>%</small></div>
+      <div class="sub">${doneCount} of ${D.phases.length} phases complete</div>
+    </div>
+    <div class="kpi green">
+      <div class="label">Total Paid</div>
+      <div class="value">${fmtNum(totalPaid)}<small> SAR</small></div>
+      <div class="sub">${payPct.toFixed(0)}% of ${fmtNum(totalContract)} SAR</div>
+    </div>
+    <div class="kpi navy">
+      <div class="label">Active Phases</div>
+      <div class="value">${activeCount}</div>
+      <div class="sub">Running in parallel</div>
+    </div>
+    <div class="kpi red">
+      <div class="label">Hardware Track</div>
+      <div class="value" style="font-size:16px;padding-top:6px">Sourcing</div>
+      <div class="sub">Vendors not yet selected</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Remaining</div>
+      <div class="value">${fmtNum(remaining)}<small> SAR</small></div>
+      <div class="sub">${D.payments.filter(p=>p.status!=='paid').length} milestone(s) pending</div>
+    </div>`;
+
+  $('gaugeBig').textContent = D.overallPct+'%';
+
+  // Current phase card
+  $('cpBadge').textContent = sl(activePhase.status);
+  $('currentPhaseCard').innerHTML = `
+    <div style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px">${activePhase.name}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">${activePhase.desc}</div>
+    <div class="bar-row">
+      <div class="top"><span>Progress</span><b>${activePhase.pct}%</b></div>
+      <div class="bar-wrap"><div class="bar ${sc(activePhase.status)}" style="width:${Math.max(activePhase.pct,2)}%"></div></div>
+    </div>
+    <div style="font-size:12px;margin-top:10px;line-height:1.8;color:var(--ink-2)">${activePhase.note}</div>`;
+
+  // Exec bars
+  $('execBars').innerHTML = D.phases.map(p=>`
+    <div class="bar-row">
+      <div class="top"><span><span class="dot ${sc(p.status)}"></span><b>${p.id}. ${p.name}</b></span><b>${p.pct}%</b></div>
+      <div class="bar-wrap"><div class="bar ${sc(p.status)}" style="width:${Math.max(p.pct,2)}%"></div></div>
+    </div>`).join('');
+
+  // Exec pay summary
+  $('execPaySummary').innerHTML = `
+    <div class="bar-row">
+      <div class="top"><span>Paid</span><b style="color:var(--green)">${fmtNum(totalPaid)} SAR</b></div>
+      <div class="bar-wrap"><div class="bar green" style="width:${payPct}%"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="top"><span>Remaining</span><b style="color:var(--amber)">${fmtNum(remaining)} SAR</b></div>
+      <div class="bar-wrap"><div class="bar amber" style="width:${100-payPct}%"></div></div>
+    </div>`;
+
+  // Contract row
+  $('contractRow').innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-3) 100%);color:#fff">
+      <h3 style="color:#fff">Contract Value <span class="en" style="color:var(--gold-2)">قيمة العقد</span></h3>
+      <div style="font-size:28px;font-weight:900;color:var(--gold-2)">${fmtNum(totalContract)} <small style="font-size:14px;color:#cfd8e6">SAR</small></div>
+      <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,.15);padding-top:12px;font-size:12.5px;line-height:1.9">
+        <div>Paid: <b style="color:var(--gold-2)">${fmtNum(totalPaid)} SAR</b></div>
+        <div>Remaining: <b style="color:#cfd8e6">${fmtNum(remaining)} SAR</b></div>
+        <div>Payment progress: <b style="color:var(--gold-2)">${payPct.toFixed(0)}%</b></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>App Track <span class="en">التطبيق</span></h3>
+      <div style="font-size:13px;line-height:1.9">
+        ${D.phases.map(p=>`<div><span class="dot ${sc(p.status)}"></span><b>${p.name}</b> — ${p.pct}%</div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Hardware Track <span class="en">الأجهزة</span></h3>
+      <div style="font-size:13px;line-height:1.9">
+        ${D.hardware.items.map(h=>`<div><span class="dot ${sc(h.status)}"></span><b>${h.title}</b> — ${h.label}</div>`).join('')}
+      </div>
+    </div>`;
+
+  // Phase cards
+  $('phaseCards').innerHTML = D.phases.map(p=>`
+    <div class="phase-card ${p.status}">
+      <div class="ph-top">
+        <div>
+          <div class="ph-name">${p.id}. ${p.name}</div>
+          <div class="ph-desc">${p.desc}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+          ${p.amount>0?`<div style="font-size:18px;font-weight:900;color:var(--navy)">${fmtNum(p.amount)} <small style="font-size:11px;color:var(--muted)">SAR</small></div>`:'<div style="font-size:12px;color:var(--muted)">Included in scope</div>'}
+          <span class="badge ${sc(p.status)}">${sl(p.status)}</span>
+          <b style="font-size:22px;color:var(--navy)">${p.pct}%</b>
+        </div>
+      </div>
+      <div class="bar-row" style="margin-bottom:0">
+        <div class="top"><span style="font-size:11px;color:var(--muted)">Trigger: ${p.trigger}</span></div>
+        <div class="bar-wrap"><div class="bar ${sc(p.status)}" style="width:${Math.max(p.pct,2)}%"></div></div>
+      </div>
+      <div class="ph-note">${p.note}</div>
+    </div>`).join('');
+
+  // Timeline
+  $('timelineList').innerHTML = D.phases.map(p=>`
+    <div class="tl-item ${p.status==='done'?'done':p.status==='active'?'active':''}">
+      <div class="tl-dot"></div>
+      <div><div class="tl-title">Phase ${p.id}: ${p.name}</div><div class="tl-meta">${p.note}</div></div>
+    </div>`).join('');
+
+  // Notes
+  $('statusNotes').innerHTML = D.notes.map(n=>`
+    <div class="act-item ${n.type==='done'?'':'plan'}" style="border-inline-start-color:var(--${n.type==='done'?'green':n.type==='active'?'amber':'grey'})">
+      <div class="desc">${n.text}</div>
+    </div>`).join('');
+
+  $('nextActions').innerHTML = D.nextActions.map((a,i)=>`
+    <div class="act-item plan">
+      <div class="desc"><b style="color:var(--gold-3)">${i+1}.</b> ${a}</div>
+    </div>`).join('');
+
+  // Hardware
+  $('hwPill').textContent = D.hardware.badge;
+  $('hwItems').innerHTML = D.hardware.items.map(h=>`
+    <div class="hw-item">
+      <div class="hw-t">${h.title} <span class="badge ${sc(h.status)}">${h.label}</span></div>
+      <div class="hw-d">${h.desc}</div>
+    </div>`).join('');
+
+  $('hwSummary').innerHTML = `
+    <div style="font-size:13px;line-height:2;color:var(--ink-2)">
+      <div>📦 <b style="color:var(--navy)">Components tracked:</b> ${D.hardware.items.length}</div>
+      <div>🔍 <b style="color:var(--amber)">Sourcing vendors:</b> ${D.hardware.items.filter(h=>h.status==='hold').length}</div>
+      <div>⏳ <b style="color:var(--grey)">Pending hardware:</b> ${D.hardware.items.filter(h=>h.status==='pending').length}</div>
+      <div>✅ <b style="color:var(--green)">Completed:</b> ${D.hardware.items.filter(h=>h.status==='done').length}</div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:#fffbf0;border-radius:8px;border:1px solid #f4e6c2;font-size:12px;color:var(--ink-2);line-height:1.6">
+      ⚠️ Hardware procurement is the critical dependency. Once vendors are selected, integration and installation can begin.
+    </div>`;
+
+  $('integrationPlan').innerHTML = D.hardware.integrationSteps.map(s=>
+    `<div><b style="color:var(--navy)">${s.n}. ${s.title}</b> — ${s.desc}</div>`
+  ).join('');
+
+  // Payments tab
+  $('paidPill').textContent = payPct.toFixed(0)+'% paid';
+  $('payGrid').innerHTML = D.payments.map(p=>`
+    <div class="pay-card ${p.status}">
+      <div class="pnum">${String(p.id).padStart(2,'0')}</div>
+      <div class="ttl">${p.name}</div>
+      <div class="trigger">${p.trigger}</div>
+      <div class="amt">${fmtNum(p.amount)} <small>SAR</small></div>
+      <span class="badge ${p.status==='paid'?'green':p.status==='due'?'amber':'grey'}">
+        ${p.status==='paid'?'✓ Paid':p.status==='due'?'⏳ Due':'— Upcoming'}
+      </span>
+    </div>`).join('');
+
+  $('paySummaryFin').innerHTML = `
+    <div class="bar-row">
+      <div class="top"><span>Paid</span><b style="color:var(--green)">${fmtNum(totalPaid)} SAR</b></div>
+      <div class="bar-wrap"><div class="bar green" style="width:${payPct}%"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="top"><span>Remaining</span><b style="color:var(--amber)">${fmtNum(remaining)} SAR</b></div>
+      <div class="bar-wrap"><div class="bar amber" style="width:${100-payPct}%"></div></div>
+    </div>
+    <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;font-weight:700;color:var(--navy);display:flex;justify-content:space-between">
+      <span>Total Contract</span><span>${fmtNum(totalContract)} SAR</span>
+    </div>`;
+
+  // Charts
+  destroyChart('gaugeOverall');
+  CHARTS.gaugeOverall = new Chart($('gaugeOverall'),{type:'doughnut',
+    data:{labels:['Done','Remaining'],datasets:[{data:[D.overallPct,Math.max(100-D.overallPct,0)],
+      backgroundColor:['#C9A961','#eef1f6'],borderWidth:0,cutout:'78%',circumference:270,rotation:225}]},
+    options:{plugins:{legend:{display:false},tooltip:{enabled:false}},animation:{duration:1100}}});
+
+  const counts={done:0,active:0,pending:0};
+  D.phases.forEach(p=>{if(p.status==='done')counts.done++;else if(p.status==='active')counts.active++;else counts.pending++;});
+  destroyChart('phaseDonut');
+  CHARTS.phaseDonut = new Chart($('phaseDonut'),{type:'doughnut',
+    data:{labels:['Completed','In Progress','Not Started'],
+      datasets:[{data:[counts.done,counts.active,counts.pending],
+        backgroundColor:['#22A06B','#F2A93B','#9aa4b2'],borderWidth:2,borderColor:'#fff'}]},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11.5,weight:'600'},padding:10,usePointStyle:true}}},cutout:'62%'}});
+
+  destroyChart('payDonut');
+  CHARTS.payDonut = new Chart($('payDonut'),{type:'doughnut',
+    data:{labels:['Paid','Remaining'],datasets:[{data:[totalPaid,remaining],
+      backgroundColor:['#22A06B','#eef1f6'],borderWidth:0,cutout:'70%'}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtNum(c.parsed)+' SAR'}}}}});
+
+  destroyChart('phaseBarChart');
+  CHARTS.phaseBarChart = new Chart($('phaseBarChart'),{type:'bar',
+    data:{labels:D.phases.map(p=>`${p.id}. ${p.name.split(' ').slice(0,3).join(' ')}`),
+      datasets:[
+        {label:'Plan 100%', data:D.phases.map(_=>100), backgroundColor:'#eef1f6',borderRadius:6},
+        {label:'Actual %',  data:D.phases.map(p=>p.pct), backgroundColor:'#0A2540',borderRadius:6}
+      ]},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11.5}}}},
+      scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}},x:{ticks:{font:{size:10},maxRotation:20}}}}});
+
+  destroyChart('payChart');
+  CHARTS.payChart = new Chart($('payChart'),{type:'doughnut',
+    data:{labels:D.payments.map(p=>p.name),
+      datasets:[{data:D.payments.map(p=>p.amount),
+        backgroundColor:['#22A06B','#C9A961','#F2A93B','#9aa4b2'],borderWidth:2,borderColor:'#fff'}]},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:10.5},padding:8,usePointStyle:true}}},cutout:'58%'}});
+}
+
+$('tabs').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $('page-'+b.dataset.tab).classList.add('active');
+});
+
+render();
+</script>
+</body>
+</html>
